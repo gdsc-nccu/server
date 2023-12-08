@@ -1,0 +1,345 @@
+{
+	"info": {
+		"_postman_id": "5b25c9ed-7af4-4b8e-8297-00f74029bdc8",
+		"name": "MemberWeb",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31400166"
+	},
+	"item": [
+		{
+			"name": "Create",
+			"item": [
+				{
+					"name": "Create_Note",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n      \"collection\": \"notes\",\r\n      \"data\": {\r\n        \"name\": \"Tech Note\",\r\n        \"date\": \"2023/11/26\",\r\n        \"link\": \"http://gdsc.com/note1126\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create_Form",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n      \"collection\": \"forms\",\r\n      \"data\": {\r\n        \"expired_at\": \"Sun, 05 Dec 2023 19:06:46 GMT\",\r\n        \"link\": \"http://example.com/form\",\r\n        \"name\": \"Form 1203\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create_Project",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"collection\": \"projects\",\r\n    \"data\": {\r\n        \"name\": \"New Project\",\r\n        \"description\": \"This is a new project.\",\r\n        \"slides\": \"http://example.com/projectslides\",\r\n        \"team_members\": [],\r\n        \"project_manager\": null\r\n    }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create_Member",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"collection\": \"users\",\r\n    \"data\": {\r\n        \"email\": \"newuser@email.com\",\r\n        \"name\": \"New User\",\r\n        \"picture\": \"http://example.com/newuserpic\",\r\n        \"student_id\": \"123456789\",\r\n        \"role\": \"Core\",\r\n        \"payment\": 200,\r\n        \"major_n_grade\": \"資科一\",\r\n        \"projects_involved\": [],\r\n        \"managed_projects\": []\r\n    }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Read",
+			"item": [
+				{
+					"name": "ReadNotes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=notes",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"read"
+							],
+							"query": [
+								{
+									"key": "collection",
+									"value": "notes"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReadForms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=forms",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"read"
+							],
+							"query": [
+								{
+									"key": "collection",
+									"value": "forms"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReadProjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=projects",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"read"
+							],
+							"query": [
+								{
+									"key": "collection",
+									"value": "projects"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReadProject",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/read_project/New Project",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"read_project",
+								"New Project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReadMembers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=users",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"read"
+							],
+							"query": [
+								{
+									"key": "collection",
+									"value": "users"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReadMember",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/read_member/newuser@email.com",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"read_member",
+								"newuser@email.com"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update",
+			"item": [
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"date\": \"2023-11-24_Demo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/update/notes/ov8ZsW6Vir5ol3YAS58u",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"update",
+								"notes",
+								"ov8ZsW6Vir5ol3YAS58u"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete",
+			"item": [
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://testforgdsc.pythonanywhere.com/delete/notes/ov8ZsW6Vir5ol3YAS58u",
+							"protocol": "https",
+							"host": [
+								"testforgdsc",
+								"pythonanywhere",
+								"com"
+							],
+							"path": [
+								"delete",
+								"notes",
+								"ov8ZsW6Vir5ol3YAS58u"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
