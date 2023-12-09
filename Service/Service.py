@@ -122,12 +122,53 @@ def read_projects_of_member(member_email):
             return jsonify([serialize_doc(proj) for proj in projects]), 200
     return jsonify({"message": "Member not involved in any projects"}), 404
 
-@app.route('/update/<collection>/<doc_id>', methods=['PUT'])
-def update_document(collection, doc_id):
+@app.route('/update_project/<project_name>', methods=['PUT'])
+def update_project(project_name):
     data = request.json
-    ref = db.collection(collection).document(doc_id)
-    ref.update(data)
-    return jsonify({"message": "Document updated successfully"}), 200
+    project_ref = db.collection('projects').where('name', '==', project_name).limit(1).stream()
+
+    project_doc = next(project_ref, None)
+    if not project_doc:
+        return jsonify({"message": "Project not found"}), 404
+
+    project_doc.reference.update(data)
+    return jsonify({"message": "Project updated successfully"}), 200
+
+@app.route('/update_member/<email>', methods=['PUT'])
+def update_member(email):
+    data = request.json
+    user_ref = db.collection('users').where('email', '==', email).limit(1).stream()
+
+    user_doc = next(user_ref, None)
+    if not user_doc:
+        return jsonify({"message": "Member not found"}), 404
+
+    user_doc.reference.update(data)
+    return jsonify({"message": "Member updated successfully"}), 200
+
+@app.route('/update_note/<note_name>', methods=['PUT'])
+def update_note(note_name):
+    data = request.json
+    note_ref = db.collection('notes').where('name', '==', note_name).limit(1).stream()
+
+    note_doc = next(note_ref, None)
+    if not note_doc:
+        return jsonify({"message": "Note not found"}), 404
+
+    note_doc.reference.update(data)
+    return jsonify({"message": "Note updated successfully"}), 200
+
+@app.route('/update_form/<form_name>', methods=['PUT'])
+def update_form(form_name):
+    data = request.json
+    form_ref = db.collection('forms').where('name', '==', form_name).limit(1).stream()
+
+    form_doc = next(form_ref, None)
+    if not form_doc:
+        return jsonify({"message": "Form not found"}), 404
+
+    form_doc.reference.update(data)
+    return jsonify({"message": "Form updated successfully"}), 200
 
 @app.route('/delete/<collection>/<doc_id>', methods=['DELETE'])
 def delete_document(collection, doc_id):
