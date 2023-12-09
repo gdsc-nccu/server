@@ -29,6 +29,23 @@ def main_root():
 def create_document():
     collection_name = request.json['collection']
     data = request.json['data']
+
+    # Check Index
+    unique_index_field = None
+    if collection_name == 'forms':
+        unique_index_field = 'name'
+    elif collection_name == 'notes':
+        unique_index_field = 'name'
+    elif collection_name == 'projects':
+        unique_index_field = 'name'
+    elif collection_name == 'users':
+        unique_index_field = 'email'
+
+    if unique_index_field and unique_index_field in data:
+        existing_doc = db.collection(collection_name).where(unique_index_field, '==', data[unique_index_field]).limit(1).get()
+        if len(existing_doc) > 0:
+            return jsonify({"message": f"{unique_index_field} already exists"}), 400
+
     ref = db.collection(collection_name)
     ref.add(data)
     return jsonify({"message": "Document added successfully"}), 201
@@ -83,21 +100,87 @@ def assign_project_manager():
 def read_documents():
     collection_name = request.args.get('collection')
     documents = db.collection(collection_name).stream()
-    result = [{doc.id: serialize_doc(doc.to_dict())} for doc in documents]
+
+    result = []
+    for doc in documents:
+        doc_data = serialize_doc(doc.to_dict())
+
+        if collection_name == 'users':
+            if 'managed_projects' in doc_data:
+                managed_project_names = []
+                for project_ref in doc_data['managed_projects']:
+                    project_data = db.collection('projects').document(project_ref).get().to_dict()
+                    managed_project_names.append(project_data.get('name', 'Unknown'))
+                doc_data['managed_projects'] = managed_project_names
+
+            if 'projects_involved' in doc_data:
+                involved_project_names = []
+                for project_ref in doc_data['projects_involved']:
+                    project_data = db.collection('projects').document(project_ref).get().to_dict()
+                    involved_project_names.append(project_data.get('name', 'Unknown'))
+                doc_data['projects_involved'] = involved_project_names
+
+        elif collection_name == 'projects':
+            if 'project_manager' in doc_data:
+                pm_ref = doc_data['project_manager']
+                if pm_ref:
+                    pm_data = db.collection('users').document(pm_ref).get().to_dict()
+                    doc_data['project_manager'] = pm_data.get('email', 'Unknown')
+
+            if 'team_members' in doc_data:
+                team_member_emails = []
+                for member_ref in doc_data['team_members']:
+                    member_data = db.collection('users').document(member_ref).get().to_dict()
+                    team_member_emails.append(member_data.get('email', 'Unknown'))
+                doc_data['team_members'] = team_member_emails
+
+        result.append({doc.id: doc_data})
+
     return jsonify(result), 200
 
 @app.route('/read_project/<name>', methods=['GET'])
 def read_project(name):
     document = db.collection('projects').where('name', '==', name).stream()
     for doc in document:
-        return jsonify(serialize_doc(doc.to_dict())), 200
+        project_data = serialize_doc(doc.to_dict())
+
+        if 'project_manager' in project_data:
+            pm_ref = project_data['project_manager']
+            if pm_ref:
+                pm_data = db.collection('users').document(pm_ref).get().to_dict()
+                project_data['project_manager'] = pm_data.get('email', 'Unknown')
+
+        if 'team_members' in project_data:
+            team_member_emails = []
+            for member_ref in project_data['team_members']:
+                member_data = db.collection('users').document(member_ref).get().to_dict()
+                team_member_emails.append(member_data.get('email', 'Unknown'))
+            project_data['team_members'] = team_member_emails
+
+        return jsonify(project_data), 200
     return jsonify({"message": "Project not found"}), 404
 
 @app.route('/read_member/<email>', methods=['GET'])
 def read_member(email):
     document = db.collection('users').where('email', '==', email).stream()
     for doc in document:
-        return jsonify(serialize_doc(doc.to_dict())), 200
+        user_data = serialize_doc(doc.to_dict())
+
+        if 'managed_projects' in user_data:
+            managed_project_names = []
+            for project_ref in user_data['managed_projects']:
+                project_data = db.collection('projects').document(project_ref).get().to_dict()
+                managed_project_names.append(project_data.get('name', 'Unknown'))
+            user_data['managed_projects'] = managed_project_names
+
+        if 'projects_involved' in user_data:
+            involved_project_names = []
+            for project_ref in user_data['projects_involved']:
+                project_data = db.collection('projects').document(project_ref).get().to_dict()
+                involved_project_names.append(project_data.get('name', 'Unknown'))
+            user_data['projects_involved'] = involved_project_names
+
+        return jsonify(user_data), 200
     return jsonify({"message": "Member not found"}), 404
 
 @app.route('/read_project_manager/<project_name>', methods=['GET'])
@@ -131,6 +214,12 @@ def update_project(project_name):
     if not project_doc:
         return jsonify({"message": "Project not found"}), 404
 
+    # Check Index
+    if 'name' in data and data['name'] != project_name:
+        existing_doc = db.collection('projects').where('name', '==', data['name']).limit(1).get()
+        if len(existing_doc) > 0:
+            return jsonify({"message": "Project name already exists"}), 400
+
     project_doc.reference.update(data)
     return jsonify({"message": "Project updated successfully"}), 200
 
@@ -142,6 +231,12 @@ def update_member(email):
     user_doc = next(user_ref, None)
     if not user_doc:
         return jsonify({"message": "Member not found"}), 404
+
+    # Check Index
+    if 'email' in data and data['email'] != email:
+        existing_doc = db.collection('users').where('email', '==', data['email']).limit(1).get()
+        if len(existing_doc) > 0:
+            return jsonify({"message": "Email already exists"}), 400
 
     user_doc.reference.update(data)
     return jsonify({"message": "Member updated successfully"}), 200
@@ -155,6 +250,12 @@ def update_note(note_name):
     if not note_doc:
         return jsonify({"message": "Note not found"}), 404
 
+    # Check Index
+    if 'name' in data and data['name'] != note_name:
+        existing_doc = db.collection('notes').where('name', '==', data['name']).limit(1).get()
+        if len(existing_doc) > 0:
+            return jsonify({"message": "Note name already exists"}), 400
+
     note_doc.reference.update(data)
     return jsonify({"message": "Note updated successfully"}), 200
 
@@ -166,6 +267,12 @@ def update_form(form_name):
     form_doc = next(form_ref, None)
     if not form_doc:
         return jsonify({"message": "Form not found"}), 404
+
+    # Check Index
+    if 'name' in data and data['name'] != form_name:
+        existing_doc = db.collection('forms').where('name', '==', data['name']).limit(1).get()
+        if len(existing_doc) > 0:
+            return jsonify({"message": "Form name already exists"}), 400
 
     form_doc.reference.update(data)
     return jsonify({"message": "Form updated successfully"}), 200
