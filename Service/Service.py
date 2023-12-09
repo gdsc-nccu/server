@@ -12,7 +12,7 @@ app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
 jwt = JWTManager(app)
 
 cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
-# cred = credentials.Certificate('Scripts/server.json')
+# cred = credentials.Certificate('Scripts/server_backup.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
