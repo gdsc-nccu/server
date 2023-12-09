@@ -6,6 +6,7 @@ from google.cloud.firestore_v1.document import DocumentReference
 app = Flask(__name__)
 
 cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
+# cred = credentials.Certificate('Scripts/server.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -109,29 +110,33 @@ def read_documents():
             if 'managed_projects' in doc_data:
                 managed_project_names = []
                 for project_ref in doc_data['managed_projects']:
-                    project_data = db.collection('projects').document(project_ref).get().to_dict()
-                    managed_project_names.append(project_data.get('name', 'Unknown'))
+                    project_data = db.collection('projects').document(project_ref).get()
+                    if project_data.exists:
+                        managed_project_names.append(project_data.to_dict().get('name', 'Unknown'))
                 doc_data['managed_projects'] = managed_project_names
 
             if 'projects_involved' in doc_data:
                 involved_project_names = []
                 for project_ref in doc_data['projects_involved']:
-                    project_data = db.collection('projects').document(project_ref).get().to_dict()
-                    involved_project_names.append(project_data.get('name', 'Unknown'))
+                    project_data = db.collection('projects').document(project_ref).get()
+                    if project_data.exists:
+                        involved_project_names.append(project_data.to_dict().get('name', 'Unknown'))
                 doc_data['projects_involved'] = involved_project_names
 
         elif collection_name == 'projects':
             if 'project_manager' in doc_data:
                 pm_ref = doc_data['project_manager']
                 if pm_ref:
-                    pm_data = db.collection('users').document(pm_ref).get().to_dict()
-                    doc_data['project_manager'] = pm_data.get('email', 'Unknown')
+                    pm_data = db.collection('users').document(pm_ref).get()
+                    if pm_data.exists:
+                        doc_data['project_manager'] = pm_data.to_dict().get('email', 'Unknown')
 
             if 'team_members' in doc_data:
                 team_member_emails = []
                 for member_ref in doc_data['team_members']:
-                    member_data = db.collection('users').document(member_ref).get().to_dict()
-                    team_member_emails.append(member_data.get('email', 'Unknown'))
+                    member_data = db.collection('users').document(member_ref).get()
+                    if member_data.exists:
+                        team_member_emails.append(member_data.to_dict().get('email', 'Unknown'))
                 doc_data['team_members'] = team_member_emails
 
         result.append({doc.id: doc_data})
@@ -147,14 +152,16 @@ def read_project(name):
         if 'project_manager' in project_data:
             pm_ref = project_data['project_manager']
             if pm_ref:
-                pm_data = db.collection('users').document(pm_ref).get().to_dict()
-                project_data['project_manager'] = pm_data.get('email', 'Unknown')
+                pm_data = db.collection('users').document(pm_ref).get()
+                if pm_data.exists:
+                    project_data['project_manager'] = pm_data.to_dict().get('email', 'Unknown')
 
         if 'team_members' in project_data:
             team_member_emails = []
             for member_ref in project_data['team_members']:
-                member_data = db.collection('users').document(member_ref).get().to_dict()
-                team_member_emails.append(member_data.get('email', 'Unknown'))
+                member_data = db.collection('users').document(member_ref).get()
+                if member_data.exists:
+                    team_member_emails.append(member_data.to_dict().get('email', 'Unknown'))
             project_data['team_members'] = team_member_emails
 
         return jsonify(project_data), 200
@@ -169,41 +176,21 @@ def read_member(email):
         if 'managed_projects' in user_data:
             managed_project_names = []
             for project_ref in user_data['managed_projects']:
-                project_data = db.collection('projects').document(project_ref).get().to_dict()
-                managed_project_names.append(project_data.get('name', 'Unknown'))
+                project_data = db.collection('projects').document(project_ref).get()
+                if project_data.exists:
+                    managed_project_names.append(project_data.to_dict().get('name', 'Unknown'))
             user_data['managed_projects'] = managed_project_names
 
         if 'projects_involved' in user_data:
             involved_project_names = []
             for project_ref in user_data['projects_involved']:
-                project_data = db.collection('projects').document(project_ref).get().to_dict()
-                involved_project_names.append(project_data.get('name', 'Unknown'))
+                project_data = db.collection('projects').document(project_ref).get()
+                if project_data.exists:
+                    involved_project_names.append(project_data.to_dict().get('name', 'Unknown'))
             user_data['projects_involved'] = involved_project_names
 
         return jsonify(user_data), 200
     return jsonify({"message": "Member not found"}), 404
-
-@app.route('/read_project_manager/<project_name>', methods=['GET'])
-def read_project_manager(project_name):
-    document = db.collection('projects').where('name', '==', project_name).stream()
-    for doc in document:
-        project_data = serialize_doc(doc.to_dict())
-        if 'project_manager' in project_data:
-            pm_ref = project_data['project_manager']
-            if pm_ref:
-                pm_data = db.collection('users').document(pm_ref).get().to_dict()
-                return jsonify(serialize_doc(pm_data)), 200
-    return jsonify({"message": "Project Manager not found"}), 404
-
-@app.route('/read_projects_of_member/<member_email>', methods=['GET'])
-def read_projects_of_member(member_email):
-    document = db.collection('users').where('email', '==', member_email).stream()
-    for doc in document:
-        user_data = serialize_doc(doc.to_dict())
-        if 'projects_involved' in user_data:
-            projects = [db.collection('projects').document(proj_ref).get().to_dict() for proj_ref in user_data['projects_involved']]
-            return jsonify([serialize_doc(proj) for proj in projects]), 200
-    return jsonify({"message": "Member not involved in any projects"}), 404
 
 @app.route('/update_project/<project_name>', methods=['PUT'])
 def update_project(project_name):
@@ -277,10 +264,45 @@ def update_form(form_name):
     form_doc.reference.update(data)
     return jsonify({"message": "Form updated successfully"}), 200
 
-@app.route('/delete/<collection>/<doc_id>', methods=['DELETE'])
-def delete_document(collection, doc_id):
-    db.collection(collection).document(doc_id).delete()
-    return jsonify({"message": "Document deleted successfully"}), 200
+@app.route('/delete_form/<form_name>', methods=['DELETE'])
+def delete_form(form_name):
+    form_ref = db.collection('forms').where('name', '==', form_name).limit(1).stream()
+    form_doc = next(form_ref, None)
+    if form_doc:
+        form_doc.reference.delete()
+        return jsonify({"message": "Form deleted successfully"}), 200
+    else:
+        return jsonify({"message": "Form not found"}), 404
+
+@app.route('/delete_note/<note_name>', methods=['DELETE'])
+def delete_note(note_name):
+    note_ref = db.collection('notes').where('name', '==', note_name).limit(1).stream()
+    note_doc = next(note_ref, None)
+    if note_doc:
+        note_doc.reference.delete()
+        return jsonify({"message": "Note deleted successfully"}), 200
+    else:
+        return jsonify({"message": "Note not found"}), 404
+
+@app.route('/delete_project/<project_name>', methods=['DELETE'])
+def delete_project(project_name):
+    project_ref = db.collection('projects').where('name', '==', project_name).limit(1).stream()
+    project_doc = next(project_ref, None)
+    if project_doc:
+        project_doc.reference.delete()
+        return jsonify({"message": "Project deleted successfully"}), 200
+    else:
+        return jsonify({"message": "Project not found"}), 404
+
+@app.route('/delete_member/<member_email>', methods=['DELETE'])
+def delete_member(member_email):
+    member_ref = db.collection('users').where('email', '==', member_email).limit(1).stream()
+    member_doc = next(member_ref, None)
+    if member_doc:
+        member_doc.reference.delete()
+        return jsonify({"message": "Member deleted successfully"}), 200
+    else:
+        return jsonify({"message": "Member not found"}), 404
 
 if __name__ == '__main__':
     app.run(threaded=True)
