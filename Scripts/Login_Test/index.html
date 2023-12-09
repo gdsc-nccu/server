@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Google Login Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id" content="937000621616-5g59hs2qkam2qbhnhuhorkqvljqrtfof.apps.googleusercontent.com">
+</head>
+<body>
+    <div id="g_id_onload"
+         data-client_id="937000621616-5g59hs2qkam2qbhnhuhorkqvljqrtfof.apps.googleusercontent.com"
+         data-callback="onSignIn">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-shape="rectangular"
+         data-logo_alignment="left">
+    </div>
+
+    <script>
+        function onSignIn(googleUser) {
+            var id_token = googleUser.credential;
+
+            console.log("ID Token: " + id_token);
+
+            fetch('http://localhost:5500/google_login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ idToken: id_token })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

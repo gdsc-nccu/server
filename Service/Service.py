@@ -1,12 +1,18 @@
 from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, auth
 from google.cloud.firestore_v1.document import DocumentReference
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
-# cred = credentials.Certificate('Scripts/server.json')
+app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+jwt = JWTManager(app)
+
+# cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
+cred = credentials.Certificate('Scripts/server.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -25,6 +31,18 @@ def serialize_doc(doc):
 @app.route('/')
 def main_root():
     return "Service is ready!"
+
+@app.route('/google_login', methods=['POST'])
+def google_login():
+    id_token = request.json.get('idToken')
+    try:
+        decoded_token = auth.verify_id_token(id_token)
+        user_email = decoded_token['email']
+        access_token = create_access_token(identity=user_email)
+        print(access_token)
+        return jsonify(access_token=access_token), 200
+    except:
+        return jsonify(message="Google login failed"), 401
 
 @app.route('/create', methods=['POST'])
 def create_document():
@@ -305,4 +323,4 @@ def delete_member(member_email):
         return jsonify({"message": "Member not found"}), 404
 
 if __name__ == '__main__':
-    app.run(threaded=True)
+    app.run(host="0.0.0.0", threaded=True)
