@@ -11,8 +11,8 @@ CORS(app)
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
 jwt = JWTManager(app)
 
-# cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
-cred = credentials.Certificate('Scripts/server.json')
+cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
+# cred = credentials.Certificate('Scripts/server.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -323,4 +323,4 @@ def delete_member(member_email):
         return jsonify({"message": "Member not found"}), 404
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", threaded=True)
+    app.run(threaded=True)
