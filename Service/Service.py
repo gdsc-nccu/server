@@ -15,8 +15,7 @@ CORS(app)
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 jwt_code = JWTManager(app)
 
-# cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
-cred = credentials.Certificate('Scripts/server_backup.json')
+cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -62,31 +61,34 @@ def custom_google_login():
     id_token = request.json.get('idToken')
     try:
         decoded_token = decode_id_token(id_token)
-        user_email = decoded_token['email']
-        print(user_email)
-        print("=====================")
-        access_token = create_access_token(identity=user_email)
-        print(access_token)
-        return jsonify(access_token=access_token), 200
+        if decoded_token:
+            user_email = decoded_token.get('email')
+            user_name = decoded_token.get('name')
+            user_picture = decoded_token.get('picture')
+            user_info = {"email": user_email, "name": user_name, "picture": user_picture}
+            access_token = create_access_token(identity=user_info)
+            return jsonify(access_token=access_token), 200
+        else:
+            return jsonify(message="Google login failed"), 401
     except Exception as e:
         print("Error during Google login:", e)
         return jsonify(message="Google login failed"), 401
 
 @app.route('/create', methods=['POST'])
-def create_document():
+@jwt_required_custom
+def create_document(user_data):
     collection_name = request.json['collection']
+
+    if collection_name in ['forms', 'notes', 'projects']:
+        if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+            return jsonify({"message": "權限不足"}), 400
+
     data = request.json['data']
+    data['email'] = user_data["sub"]["email"]
+    data['picture'] = user_data["sub"]["picture"]
 
     # Check Index
-    unique_index_field = None
-    if collection_name == 'forms':
-        unique_index_field = 'name'
-    elif collection_name == 'notes':
-        unique_index_field = 'name'
-    elif collection_name == 'projects':
-        unique_index_field = 'name'
-    elif collection_name == 'users':
-        unique_index_field = 'email'
+    unique_index_field = 'name' if collection_name in ['forms', 'notes', 'projects'] else 'email' if collection_name == 'users' else None
 
     if unique_index_field and unique_index_field in data:
         existing_doc = db.collection(collection_name).where(unique_index_field, '==', data[unique_index_field]).limit(1).get()
@@ -95,10 +97,15 @@ def create_document():
 
     ref = db.collection(collection_name)
     ref.add(data)
+
     return jsonify({"message": "Document added successfully"}), 201
 
 @app.route('/assign_member_to_project', methods=['POST'])
-def assign_member_to_project():
+@jwt_required_custom
+def assign_member_to_project(user_data):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     user_email = request.json['user_email']
     project_name = request.json['project_name']
     
@@ -121,7 +128,11 @@ def assign_member_to_project():
     return jsonify({"message": "Member assigned to project successfully"}), 200
 
 @app.route('/assign_pm', methods=['POST'])
-def assign_project_manager():
+@jwt_required_custom
+def assign_project_manager(user_data):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     user_email = request.json['user_email']
     project_name = request.json['project_name']
     
@@ -144,9 +155,14 @@ def assign_project_manager():
     return jsonify({"message": "Project manager assigned successfully"}), 200
 
 @app.route('/read', methods=['GET'])
-def read_documents():
+@jwt_required_custom
+def read_documents(user_data):
     collection_name = request.args.get('collection')
     documents = db.collection(collection_name).stream()
+
+    if collection_name == 'users':
+        if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+            return jsonify({"message": "權限不足"}), 400
 
     result = []
     for doc in documents:
@@ -190,7 +206,8 @@ def read_documents():
     return jsonify(result), 200
 
 @app.route('/read_project/<name>', methods=['GET'])
-def read_project(name):
+@jwt_required_custom
+def read_project(user_data, name):
     document = db.collection('projects').where('name', '==', name).stream()
     for doc in document:
         project_data = serialize_doc(doc.to_dict())
@@ -214,8 +231,13 @@ def read_project(name):
     return jsonify({"message": "Project not found"}), 404
 
 @app.route('/read_member/<email>', methods=['GET'])
-def read_member(email):
+@jwt_required_custom
+def read_member(user_dataed, email):
+    if user_dataed["sub"]["email"] != email:
+        return jsonify({"message": "權限不足"}), 400
+
     document = db.collection('users').where('email', '==', email).stream()
+
     for doc in document:
         user_data = serialize_doc(doc.to_dict())
 
@@ -239,7 +261,11 @@ def read_member(email):
     return jsonify({"message": "Member not found"}), 404
 
 @app.route('/update_project/<project_name>', methods=['PUT'])
-def update_project(project_name):
+@jwt_required_custom
+def update_project(user_data, project_name):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     data = request.json
     project_ref = db.collection('projects').where('name', '==', project_name).limit(1).stream()
 
@@ -257,7 +283,11 @@ def update_project(project_name):
     return jsonify({"message": "Project updated successfully"}), 200
 
 @app.route('/update_member/<email>', methods=['PUT'])
-def update_member(email):
+@jwt_required_custom
+def update_member(user_data, email):
+    if user_data["sub"]["email"] != email:
+        return jsonify({"message": "權限不足"}), 400
+
     data = request.json
     user_ref = db.collection('users').where('email', '==', email).limit(1).stream()
 
@@ -275,7 +305,11 @@ def update_member(email):
     return jsonify({"message": "Member updated successfully"}), 200
 
 @app.route('/update_note/<note_name>', methods=['PUT'])
-def update_note(note_name):
+@jwt_required_custom
+def update_note(user_data, note_name):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     data = request.json
     note_ref = db.collection('notes').where('name', '==', note_name).limit(1).stream()
 
@@ -293,7 +327,11 @@ def update_note(note_name):
     return jsonify({"message": "Note updated successfully"}), 200
 
 @app.route('/update_form/<form_name>', methods=['PUT'])
-def update_form(form_name):
+@jwt_required_custom
+def update_form(user_data, form_name):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     data = request.json
     form_ref = db.collection('forms').where('name', '==', form_name).limit(1).stream()
 
@@ -311,7 +349,11 @@ def update_form(form_name):
     return jsonify({"message": "Form updated successfully"}), 200
 
 @app.route('/delete_form/<form_name>', methods=['DELETE'])
-def delete_form(form_name):
+@jwt_required_custom
+def delete_form(user_data, form_name):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     form_ref = db.collection('forms').where('name', '==', form_name).limit(1).stream()
     form_doc = next(form_ref, None)
     if form_doc:
@@ -321,7 +363,11 @@ def delete_form(form_name):
         return jsonify({"message": "Form not found"}), 404
 
 @app.route('/delete_note/<note_name>', methods=['DELETE'])
-def delete_note(note_name):
+@jwt_required_custom
+def delete_note(user_data, note_name):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     note_ref = db.collection('notes').where('name', '==', note_name).limit(1).stream()
     note_doc = next(note_ref, None)
     if note_doc:
@@ -331,7 +377,11 @@ def delete_note(note_name):
         return jsonify({"message": "Note not found"}), 404
 
 @app.route('/delete_project/<project_name>', methods=['DELETE'])
-def delete_project(project_name):
+@jwt_required_custom
+def delete_project(user_data, project_name):
+    if user_data["sub"]["email"] != "gdscnccu@gmail.com":
+        return jsonify({"message": "權限不足"}), 400
+
     project_ref = db.collection('projects').where('name', '==', project_name).limit(1).stream()
     project_doc = next(project_ref, None)
     if project_doc:
@@ -341,7 +391,11 @@ def delete_project(project_name):
         return jsonify({"message": "Project not found"}), 404
 
 @app.route('/delete_member/<member_email>', methods=['DELETE'])
-def delete_member(member_email):
+@jwt_required_custom
+def delete_member(user_data, member_email):
+    if user_data["sub"]["email"] != member_email:
+        return jsonify({"message": "權限不足"}), 400
+
     member_ref = db.collection('users').where('email', '==', member_email).limit(1).stream()
     member_doc = next(member_ref, None)
     if member_doc:
