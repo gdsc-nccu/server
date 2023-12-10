@@ -1,18 +1,22 @@
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 import firebase_admin
-from firebase_admin import credentials, firestore, auth
+from firebase_admin import credentials, firestore
 from google.cloud.firestore_v1.document import DocumentReference
 from flask_cors import CORS
+from config import JWT_SECRET_KEY
+import jwt
+from jwt import PyJWKClient
+from functools import wraps
 
 app = Flask(__name__)
 CORS(app)
 
-app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
-jwt = JWTManager(app)
+app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
+jwt_code = JWTManager(app)
 
-cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
-# cred = credentials.Certificate('Scripts/server_backup.json')
+# cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
+cred = credentials.Certificate('Scripts/server_backup.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -28,20 +32,44 @@ def serialize_doc(doc):
     else:
         return doc
 
+def decode_id_token(id_token):
+    jwks_client = PyJWKClient("https://www.googleapis.com/oauth2/v3/certs")
+    signing_key = jwks_client.get_signing_key_from_jwt(id_token)
+    decoded_token = jwt.decode(id_token, signing_key.key, algorithms=["RS256"], audience='691751608975-c102etsspqsaifgrlr634keuddh5hl2e.apps.googleusercontent.com')
+    return decoded_token
+
+def jwt_required_custom(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        jwt_token = request.headers.get('Authorization', None)
+        if not jwt_token:
+            return jsonify(message="缺少授權 token"), 401
+        try:
+            user_data = jwt.decode(jwt_token, app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
+            return fn(user_data=user_data, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return jsonify(message="Token 已過期"), 401
+        except jwt.InvalidTokenError:
+            return jsonify(message="無效的 token"), 401
+    return wrapper
+
 @app.route('/')
 def main_root():
     return "Service is ready!"
 
 @app.route('/google_login', methods=['POST'])
-def google_login():
+def custom_google_login():
     id_token = request.json.get('idToken')
     try:
-        decoded_token = auth.verify_id_token(id_token)
+        decoded_token = decode_id_token(id_token)
         user_email = decoded_token['email']
+        print(user_email)
+        print("=====================")
         access_token = create_access_token(identity=user_email)
         print(access_token)
         return jsonify(access_token=access_token), 200
-    except:
+    except Exception as e:
+        print("Error during Google login:", e)
         return jsonify(message="Google login failed"), 401
 
 @app.route('/create', methods=['POST'])
