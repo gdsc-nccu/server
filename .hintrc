@@ -9,6 +9,7 @@
       {
         "html-has-lang": "off"
       }
-    ]
+    ],
+    "no-inline-styles": "off"
   }
 }
