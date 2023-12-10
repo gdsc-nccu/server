@@ -84,8 +84,10 @@ def create_document(user_data):
             return jsonify({"message": "權限不足"}), 400
 
     data = request.json['data']
-    data['email'] = user_data["sub"]["email"]
-    data['picture'] = user_data["sub"]["picture"]
+    
+    if collection_name == "users":
+        data['email'] = user_data["sub"]["email"]
+        data['picture'] = user_data["sub"]["picture"]
 
     # Check Index
     unique_index_field = 'name' if collection_name in ['forms', 'notes', 'projects'] else 'email' if collection_name == 'users' else None
