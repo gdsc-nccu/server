@@ -232,8 +232,9 @@ def read_project(user_data, name):
 
 @app.route('/read_member/<email>', methods=['GET'])
 @jwt_required_custom
-def read_member(user_dataed, email):
-    if user_dataed["sub"]["email"] != email:
+def read_member(user_data, email):
+    print(user_data["sub"]["email"])
+    if user_data["sub"]["email"] != email:
         return jsonify({"message": "權限不足"}), 400
 
     document = db.collection('users').where('email', '==', email).stream()
