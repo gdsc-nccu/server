@@ -55,7 +55,7 @@ def jwt_required_custom(fn):
 
 @app.route('/')
 def main_root():
-    return "Service is ready!"
+    return "Service is ready!!!"
 
 @app.route('/git_update', methods=['POST'])
 def git_update():
