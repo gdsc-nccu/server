@@ -59,7 +59,7 @@ def main_root():
 
 @app.route('/git_update', methods=['POST'])
 def git_update():
-    repo = git.repo('./member-server')
+    repo = git.Repo('./member-server')
     origin = repo.remotes.origin
     repo.create_head('main', origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
     origin.pull()
