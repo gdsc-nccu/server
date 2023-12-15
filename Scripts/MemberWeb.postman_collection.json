@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "062f6fba-6d26-40ba-8846-06f7347a59ca",
+		"_postman_id": "baaa24b2-9321-4f60-9643-4c292a88950d",
 		"name": "MemberWeb",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "31400166"
@@ -13,10 +13,16 @@
 					"name": "Create_Note",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n      \"collection\": \"notes\",\r\n      \"data\": {\r\n        \"name\": \"Demo Note\",\r\n        \"date\": \"2023/11/26\",\r\n        \"link\": \"http://gdsc.com/note1126\"\r\n    }\r\n}",
+							"raw": "{\r\n      \"collection\": \"notes\",\r\n      \"data\": {\r\n        \"name\": \"Note 1210\",\r\n        \"date\": \"2023/11/26\",\r\n        \"link\": \"http://gdsc.com/note1126\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24,10 +30,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/create",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -42,7 +48,13 @@
 					"name": "Create_Form",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n      \"collection\": \"forms\",\r\n      \"data\": {\r\n        \"expired_at\": \"Sun, 05 Dec 2023 19:06:46 GMT\",\r\n        \"link\": \"http://example.com/form\",\r\n        \"name\": \"Form 1204\"\r\n    }\r\n}",
@@ -53,10 +65,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/create",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -71,10 +83,16 @@
 					"name": "Create_Project",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"collection\": \"projects\",\r\n    \"data\": {\r\n        \"name\": \"Project_1210\",\r\n        \"description\": \"This is a new project.\",\r\n        \"slides\": \"http://example.com/projectslides1209\",\r\n        \"team_members\": [],\r\n        \"project_manager\": null\r\n    }\r\n}\r\n",
+							"raw": "{\r\n    \"collection\": \"projects\",\r\n    \"data\": {\r\n        \"name\": \"Project_1210\",\r\n        \"description\": \"This is a new project.\",\r\n        \"slides\": \"http://example.com/projectslides1210\",\r\n        \"team_members\": [],\r\n        \"project_manager\": null\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -82,10 +100,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/create",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -100,10 +118,16 @@
 					"name": "Create_Member",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"collection\": \"users\",\r\n    \"data\": {\r\n        \"email\": \"1210@email.com\",\r\n        \"name\": \"1209 User\",\r\n        \"picture\": \"http://example.com/1209\",\r\n        \"student_id\": \"123456789\",\r\n        \"role\": \"Core\",\r\n        \"payment\": 200,\r\n        \"paid\": true,\r\n        \"major_n_grade\": \"資科三\",\r\n        \"projects_involved\": [],\r\n        \"managed_projects\": []\r\n    }\r\n}\r\n",
+							"raw": "{\r\n    \"collection\": \"users\",\r\n    \"data\": {\r\n        \"name\": \"GDSC NCCU\",\r\n        \"student_id\": \"123456789\",\r\n        \"role\": \"Core\",\r\n        \"payment\": 200,\r\n        \"paid\": true,\r\n        \"major_n_grade\": \"資科四\",\r\n        \"projects_involved\": [],\r\n        \"managed_projects\": []\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -111,10 +135,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/create",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/create",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -129,10 +153,16 @@
 					"name": "Assign_Member_to_Project",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_email\": \"1210@email.com\",\r\n    \"project_name\": \"Project_1210\"\r\n}",
+							"raw": "{\r\n    \"user_email\": \"gdscnccu@gmail.com\",\r\n    \"project_name\": \"Project_1210\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -140,10 +170,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/assign_member_to_project",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/assign_member_to_project",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -158,10 +188,16 @@
 					"name": "Assign_PM",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_email\": \"1210@email.com\",\r\n    \"project_name\": \"Project_1210\"\r\n}",
+							"raw": "{\r\n    \"user_email\": \"gdscnccu@gmail.com\",\r\n    \"project_name\": \"Project_1210\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -169,10 +205,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/assign_pm",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/assign_pm",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -192,12 +228,18 @@
 					"name": "ReadNotes",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=notes",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/read?collection=notes",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -218,12 +260,18 @@
 					"name": "ReadForms",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=forms",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/read?collection=forms",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -244,12 +292,18 @@
 					"name": "ReadProjects",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=projects",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/read?collection=projects",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -273,16 +327,22 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/read_project/Project_1210",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/read_project/Project_1210",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -298,12 +358,18 @@
 					"name": "ReadMembers",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/read?collection=users",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/read?collection=users",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -324,18 +390,24 @@
 					"name": "ReadMember",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/read_member/1210@email.com",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/read_member/gdscnccu@gmail.com",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
 							"path": [
 								"read_member",
-								"1210@email.com"
+								"gdscnccu@gmail.com"
 							]
 						}
 					},
@@ -350,7 +422,13 @@
 					"name": "Update_Note",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"Tech Note\",\r\n    \"date\": \"12/09\"\r\n}",
@@ -361,16 +439,16 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/update_note/Demo Note",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/update_note/Note 1210",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
 							"path": [
 								"update_note",
-								"Demo Note"
+								"Note 1210"
 							]
 						}
 					},
@@ -380,7 +458,13 @@
 					"name": "Update_Form",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"Form 1204\",\r\n    \"link\": \"https://google.coms\",\r\n    \"expired_at\": \"Sun, 05 Dec 2023 19:06:46 GMTT\"\r\n}",
@@ -391,10 +475,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/update_form/Form 1204",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/update_form/Form 1204",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -410,7 +494,13 @@
 					"name": "Update_Project",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"Project_1210\",\r\n    \"description\": \"Updated project description.\"\r\n}",
@@ -421,10 +511,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/update_project/Project_1210",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/update_project/Project_1210",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -440,10 +530,16 @@
 					"name": "Update_Member",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"1210@email.com\"\r\n}",
+							"raw": "{\r\n    \"name\": \"ABC\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -451,16 +547,16 @@
 							}
 						},
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/update_member/1210@email.com",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/update_member/gdscnccu@gmail.com",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
 							"path": [
 								"update_member",
-								"1210@email.com"
+								"gdscnccu@gmail.com"
 							]
 						}
 					},
@@ -475,12 +571,18 @@
 					"name": "Delete_Note",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/delete_note/Tech Note",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/delete_note/Tech Note",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -496,18 +598,31 @@
 					"name": "Delete_Form",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/delete_form/Form 1204",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/delete_form/Form 1204",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
 							"path": [
 								"delete_form",
 								"Form 1204"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -517,12 +632,18 @@
 					"name": "Delete_Project",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/delete_project/Project_1210",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/delete_project/Project_1210",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
@@ -538,18 +659,24 @@
 					"name": "Delete_Member",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "<access_token>",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "https://testforgdsc.pythonanywhere.com/delete_member/1210@email.com",
+							"raw": "https://gdscmemberweb.pythonanywhere.com/delete_member/gdscnccu@gmail.com",
 							"protocol": "https",
 							"host": [
-								"testforgdsc",
+								"gdscmemberweb",
 								"pythonanywhere",
 								"com"
 							],
 							"path": [
 								"delete_member",
-								"1210@email.com"
+								"gdscnccu@gmail.com"
 							]
 						}
 					},
