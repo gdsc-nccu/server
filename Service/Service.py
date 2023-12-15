@@ -8,6 +8,7 @@ from config import JWT_SECRET_KEY
 import jwt
 from jwt import PyJWKClient
 from functools import wraps
+import git
 
 app = Flask(__name__)
 CORS(app)
@@ -15,7 +16,7 @@ CORS(app)
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 jwt_code = JWTManager(app)
 
-cred = credentials.Certificate('/home/testforgdsc/mysite/server.json')
+cred = credentials.Certificate('/home/gdscmemberweb/member-server/Service/server.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -55,6 +56,14 @@ def jwt_required_custom(fn):
 @app.route('/')
 def main_root():
     return "Service is ready!"
+
+@app.route('/git_update', methods=['POST'])
+def git_update():
+    repo = git.repo('./member-server')
+    origin = repo.remotes.origin
+    repo.create_head('main', origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
+    origin.pull()
+    return "Pulled", 200
 
 @app.route('/google_login', methods=['POST'])
 def custom_google_login():
